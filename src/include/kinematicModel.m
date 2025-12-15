@@ -28,6 +28,40 @@ classdef kinematicModel < handle
             % bJi
             
             %TO DO
+
+            bJi = zeros(6,i);
+
+            bTi = self.gm.getTransformWrtBase(i);
+            % position of link i (point of interest) relative to base frame
+            bri = bTi(1:3,4);
+
+            for j = 1:i
+                
+                bTj = self.gm.getTransformWrtBase(j);
+
+                % axis z of joint j expressed in base frame
+                % <taking into account eventual rotations of the joint>
+                zj = bTj(1:3,3);
+
+                if (self.gm.jointType(j) == 1)
+
+                    JL = zj;
+                    bJi(:,j) = [0; 0; 0; JL];
+
+                end
+
+                if (self.gm.jointType(j) == 0)
+                    % position of link j relative to base frame
+                    brj = bTj(1:3,4);
+ 
+                    JA = zj; % angular jacobian
+                    JL = cross(zj,bri - brj); % linear jacobian
+                    % <JL simply that's how is the formula>
+                    bJi(:,j) = [JA; JL];
+
+                end
+            end
+
         end
 
         function updateJacobian(self)
@@ -36,6 +70,7 @@ classdef kinematicModel < handle
         % - J: end-effector jacobian matrix
             % TO DO
 
+            self.J = self.getJacobianOfLinkWrtBase(self.gm.jointNumber);
             
         end
     end
