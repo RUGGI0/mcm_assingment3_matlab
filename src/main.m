@@ -14,9 +14,13 @@ q = [pi/2, -pi/4, 0, -pi/4, 0, 0.15, pi/4]';
 
 %% Define the tool frame rigidly attached to the end-effector
 % Tool frame definition
-eRt = ....
-e_r_te = ...;
-eTt = ...;
+eRt = YPRToRot(pi/10, 0, pi/6);
+e_r_te = [0.3; 0.1; 0];
+
+eTt = zeros(4);
+eTt(1:3, 1:3) = eRt;
+eTt(1:3, 4) = e_r_te;
+eTt(4, 4) = 1;
 
 %% Initialize Geometric Model (GM) and Kinematic Model (KM)
 

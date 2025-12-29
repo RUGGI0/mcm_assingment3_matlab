@@ -14,17 +14,19 @@ classdef geometricModel < handle
         jointNumber
         iTj
         q
+        eTt
     end
 
     methods
         % Constructor to initialize the geomModel property
-        function self = geometricModel(iTj_0,jointType)
+        function self = geometricModel(iTj_0,jointType,eTt)
             if nargin > 1
                 self.iTj_0 = iTj_0;
                 self.iTj = iTj_0;
                 self.jointType = jointType;
                 self.jointNumber = length(jointType);
                 self.q = zeros(self.jointNumber,1);
+                self.eTt = eTt;
             else
                 error('Not enough input arguments (iTj_0) (jointType)')
             end
@@ -75,17 +77,7 @@ classdef geometricModel < handle
             %TO DO
             bTn = self.getTransformWrtBase(self.jointNumber);
 
-            Trans = zeros(4);
-
-            Rot = YPRToRot(pi/10, 0, pi/6);
-
-            Trans(1:3, 1:3) = Rot;
-
-            Trans(1:3, 4) = [0.3; 0.1; 0];
-
-            Trans(4, 4) = 1;
-
-            bTt = bTn * Trans;
+            bTt = bTn * self.eTt;
         end
 
         function [bTk] = getTransformWrtBase(self,k)
