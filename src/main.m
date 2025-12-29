@@ -42,18 +42,18 @@ disp(bTt);
 
 %% Define the goal frame and initialize cartesian control
 % Goal definition 
-bOg = ...
-bRg = ...
+bOg = [0.2;-0.7;0.3];
+bRg = YPRToRot(0,1.57,0);
 bTg = [bRg bOg;0 0 0 1]; 
 disp('bTg')
 disp(bTg)
 
 % control proportional gain 
-k_a = ...
-k_l = ...
+k_a = 0.8;
+k_l = 0.8;
 
 % Cartesian control initialization
-cc = cartesianControl(....);
+cc = cartesianControl(gm, k_a, k_l);
 
 %% Initialize control loop 
 
@@ -87,11 +87,21 @@ for i = t
     % Update the jacobian matrix of the given model
 
     %% INVERSE KINEMATICS
+
+    km = kinematicModel(gm);
+    km.updateJacobian();
+
+    x_dot = cc.getCartesianReference(bTg);
+
+    bJe = km.getJacobianOfJointWrtBase(7);
+
     % Compute desired joint velocities 
-    q_dot = ...
+    q_dot = pinv(bJe) * x_dot;
 
     % simulating the robot
-    q = KinematicSimulation(....);
+    q = KinematicSimulation(q,q_dot,dt,qmin,qmax);
+
+    gm.updateDirectGeometry(q);
     
     pm.plotIter(gm, km, i, q_dot);
 

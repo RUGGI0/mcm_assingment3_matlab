@@ -70,7 +70,7 @@ classdef kinematicModel < handle
         % - J: end-effector jacobian matrix
             % TO DO
 
-            self.J = self.getJacobianOfLinkWrtBase(self.gm.jointNumber);
+            self.J = self.getJacobianOfJointWrtBase(self.gm.jointNumber);
             
         end
     end

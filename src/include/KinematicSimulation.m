@@ -10,4 +10,19 @@
 % Outputs
 % - q new joint configuration
 
+function [q] = KinematicSimulation(q,q_dot,ts,q_min,q_max)
+
+    q = q + q_dot*ts;
+
+    for i = 1:length(q)
+        
+        if q(i) > q_max(i)
+            q(i) = q_max(i);
+        end
+              
+        if q(i) < q_min(i)
+                q(i) = q_min(i); 
+        end
+    end
+
 end
