@@ -93,10 +93,24 @@ for i = t
 
     x_dot = cc.getCartesianReference(bTg);
 
-    bJe = km.getJacobianOfJointWrtBase(7);
+    %bJe = km.getJacobianOfJointWrtBase(7);
+    bJe = km.J;
+
+    % ---------------------------------
+    bTe = gm.getTransformWrtBase(gm.jointNumber);
+    bRe = bTe(1:3, 1:3);
+    e_r_tb = bRe' * e_r_te;
+
+    skew_e_r_te = [   0        -e_r_tb(3)  e_r_tb(2);
+                   e_r_tb(3)     0        -e_r_tb(1);
+                  -e_r_tb(2)  e_r_tb(1)     0       ];
+    temp = [eye(3) zeros(3);
+           skew_e_r_te eye(3)];
+    bJt = temp * bJe;
+    % ---------------------------------
 
     % Compute desired joint velocities 
-    q_dot = pinv(bJe) * x_dot;
+    q_dot = pinv(bJt) * x_dot;
 
     % simulating the robot
     q = KinematicSimulation(q,q_dot,dt,qmin,qmax);
@@ -104,6 +118,11 @@ for i = t
     gm.updateDirectGeometry(q);
     
     pm.plotIter(gm, km, i, q_dot);
+
+    % ---------------------------------
+    x_dot_T   = bJt * q_dot;   % tool actual twist
+    x_dot_E   = bJe * q_dot;   % end-effector actual twist
+    % ---------------------------------
 
     if(norm(x_dot(1:3)) < 0.01 && norm(x_dot(4:6)) < 0.01)
         disp('Reached Requested Pose')
