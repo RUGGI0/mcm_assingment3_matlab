@@ -31,9 +31,13 @@ classdef kinematicModel < handle
 
             bJi = zeros(6,i);
 
-            bTi = self.gm.getTransformWrtBase(i);
-            % position of link i (point of interest) relative to base frame
-            bri = bTi(1:3,4);
+            if i == self.gm.jointNumber
+                bTt = self.gm.getToolTransformWrtBase();
+                bri = bTt(1:3,4); % Posizione del TOOL rispetto alla base
+            else
+                bTi = self.gm.getTransformWrtBase(i);
+                bri = bTi(1:3,4); % Posizione del giunto i rispetto alla base
+            end
 
             for j = 1:i
                 
