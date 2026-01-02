@@ -79,8 +79,20 @@ pm = plotManipulators(show_simulation);
 pm.initMotionPlot(t, bTg(1:3,4));
 
 %%%%%%% Kinematic Simulation %%%%%%%
+
+ % Updating transformation matrices for the new configuration 
+
+ % Get the cartesian error given an input goal frame
+
+ % Update the jacobian matrix of the given model
+
+% end effector and tool linear and angular velocities
+history_x_dot_T = zeros(6, samples);
+history_x_dot_E = zeros(6, samples);
+k = 0;
 for i = t
     %% INVERSE KINEMATICS
+    k = k + 1;
 
     km = kinematicModel(gm);
     km.updateJacobian();
@@ -93,14 +105,13 @@ for i = t
     % End-effector pose
     bTe = gm.getTransformWrtBase(gm.jointNumber);
     bRe = bTe(1:3, 1:3);
-    %e_r_tb = bRe' * e_r_te;
+    
     e_r_tb = bRe * e_r_te;
 
     skew_e_r_tb = [   0        -e_r_tb(3)  e_r_tb(2);
                    e_r_tb(3)     0        -e_r_tb(1);
                   -e_r_tb(2)  e_r_tb(1)     0       ];
-    %temp = [eye(3) zeros(3);
-    %       skew_e_r_te eye(3)];
+  
     temp = [eye(3) zeros(3);
            -skew_e_r_tb eye(3)];
     bJt = temp * bJe;
@@ -118,8 +129,9 @@ for i = t
     pm.plotIter(gm, km, i, q_dot);
 
     % ---------------------------------
-    x_dot_T   = bJt * q_dot;   % tool actual twist
-    x_dot_E   = bJe * q_dot;   % end-effector actual twist
+    % save values
+    history_x_dot_T(:, k)  = bJt * q_dot;   % tool actual twist
+    history_x_dot_E(:, k)  = bJe * q_dot;   % end-effector actual twist
     % ---------------------------------
 
     if(norm(x_dot(1:3)) < 0.01 && norm(x_dot(4:6)) < 0.01)
