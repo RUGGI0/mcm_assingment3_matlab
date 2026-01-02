@@ -42,7 +42,7 @@ disp(bTt);
 
 %% Define the goal frame and initialize cartesian control
 % Goal definition 
-bOg = [0.2;-0.7;0.3];
+bOg = [0.2;-0.8;0.3];
 bRg = YPRToRot(0,1.57,0);
 bTg = [bRg bOg;0 0 0 1]; 
 disp('bTg')
@@ -87,28 +87,24 @@ for i = t
 
     x_dot = cc.getCartesianReference(bTg);
 
-    % End-effector Jacobian (base frame), twist order [omega; v]
     bJe = km.J;
 
     % -------------------- PATCHED TOOL JACOBIAN --------------------
     % End-effector pose
     bTe = gm.getTransformWrtBase(gm.jointNumber);
     bRe = bTe(1:3, 1:3);
+    %e_r_tb = bRe' * e_r_te;
+    e_r_tb = bRe * e_r_te;
 
-    % EE->Tool offset expressed in base
-    r_bt = bRe * e_r_te;
-
-    % skew(r_bt)
-    S = [   0       -r_bt(3)   r_bt(2);
-          r_bt(3)     0       -r_bt(1);
-         -r_bt(2)   r_bt(1)     0     ];
-
-    % Twist shift: [w_t; v_t] = [I 0; -S I] [w_e; v_e]
-    T = [eye(3) zeros(3);
-         -S     eye(3)];
-
-    bJt = T * bJe;
-    % ---------------------------------------------------------------
+    skew_e_r_tb = [   0        -e_r_tb(3)  e_r_tb(2);
+                   e_r_tb(3)     0        -e_r_tb(1);
+                  -e_r_tb(2)  e_r_tb(1)     0       ];
+    %temp = [eye(3) zeros(3);
+    %       skew_e_r_te eye(3)];
+    temp = [eye(3) zeros(3);
+           -skew_e_r_tb eye(3)];
+    bJt = temp * bJe;
+    % ---------------------------------
 
     % Compute desired joint velocities 
     q_dot = pinv(bJt) * x_dot;
@@ -117,6 +113,7 @@ for i = t
     q = KinematicSimulation(q,q_dot,dt,qmin,qmax);
 
     gm.updateDirectGeometry(q);
+    
     
     pm.plotIter(gm, km, i, q_dot);
 
