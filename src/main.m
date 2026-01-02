@@ -80,12 +80,6 @@ pm.initMotionPlot(t, bTg(1:3,4));
 
 %%%%%%% Kinematic Simulation %%%%%%%
 for i = t
-    % Updating transformation matrices for the new configuration 
-
-    % Get the cartesian error given an input goal frame
-
-    % Update the jacobian matrix of the given model
-
     %% INVERSE KINEMATICS
 
     km = kinematicModel(gm);
@@ -95,7 +89,8 @@ for i = t
 
     bJe = km.J;
 
-    % ---------------------------------
+    % -------------------- PATCHED TOOL JACOBIAN --------------------
+    % End-effector pose
     bTe = gm.getTransformWrtBase(gm.jointNumber);
     bRe = bTe(1:3, 1:3);
     %e_r_tb = bRe' * e_r_te;
