@@ -79,6 +79,12 @@ pm = plotManipulators(show_simulation);
 pm.initMotionPlot(t, bTg(1:3,4));
 
 %%%%%%% Kinematic Simulation %%%%%%%
+    % Updating transformation matrices for the new configuration 
+
+    % Get the cartesian error given an input goal frame
+
+    % Update the jacobian matrix of the given model
+
 for i = t
     %% INVERSE KINEMATICS
 
