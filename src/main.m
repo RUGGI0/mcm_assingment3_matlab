@@ -101,13 +101,13 @@ for i = t
     %e_r_tb = bRe' * e_r_te;
     e_r_tb = bRe * e_r_te;
 
-    skew_e_r_te = [   0        -e_r_tb(3)  e_r_tb(2);
+    skew_e_r_tb = [   0        -e_r_tb(3)  e_r_tb(2);
                    e_r_tb(3)     0        -e_r_tb(1);
                   -e_r_tb(2)  e_r_tb(1)     0       ];
     %temp = [eye(3) zeros(3);
     %       skew_e_r_te eye(3)];
     temp = [eye(3) zeros(3);
-           -skew_e_r_te eye(3)];
+           -skew_e_r_tb eye(3)];
     bJt = temp * bJe;
     % ---------------------------------
 
