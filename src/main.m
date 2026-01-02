@@ -42,7 +42,7 @@ disp(bTt);
 
 %% Define the goal frame and initialize cartesian control
 % Goal definition 
-bOg = [0.2;-0.7;0.3];
+bOg = [0.2;-0.8;0.3];
 bRg = YPRToRot(0,1.57,0);
 bTg = [bRg bOg;0 0 0 1]; 
 disp('bTg')
@@ -118,6 +118,7 @@ for i = t
     q = KinematicSimulation(q,q_dot,dt,qmin,qmax);
 
     gm.updateDirectGeometry(q);
+    
     
     pm.plotIter(gm, km, i, q_dot);
 
