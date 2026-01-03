@@ -142,3 +142,28 @@ for i = t
 end
 
 pm.plotFinalConfig(gm);
+
+%% Plot velocities
+actual_t = t(1:k);
+
+% Tool
+figure
+hold on;
+p1 = plot(actual_t, history_x_dot_T(1:3, 1:k), '-', 'LineWidth', 2); 
+p2 = plot(actual_t, history_x_dot_T(4:6, 1:k), '-', 'LineWidth', 2);
+title('Tool Velocities: Linear [m/s] & Angular [rad/s]');
+xlabel('Time [s]'); ylabel('Velocity');
+legend([p1; p2], {'v_x','v_y','v_z','\omega_x','\omega_y','\omega_z'}, 'Location', 'northeastoutside');
+grid on;
+
+% End Effector
+figure
+hold on;
+p3 = plot(actual_t, history_x_dot_E(1:3, 1:k), '-', 'LineWidth', 2);
+p4 = plot(actual_t, history_x_dot_E(4:6, 1:k), '-', 'LineWidth', 2);
+title('End-Effector Velocities: Linear [m/s] & Angular [rad/s]');
+xlabel('Time [s]'); ylabel('Velocity');
+legend([p3; p4], {'v_x','v_y','v_z','\omega_x','\omega_y','\omega_z'}, 'Location', 'northeastoutside');
+grid on;
+
+ 
