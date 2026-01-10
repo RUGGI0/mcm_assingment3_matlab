@@ -12,7 +12,9 @@
 
 function [q] = KinematicSimulation(q,q_dot,ts,q_min,q_max)
 
-    q = q + q_dot*ts;
+    q = q + q_dot*ts; %*% CK: discrete formula for integration
+
+    %*% CK: enforcing physical limits
 
     for i = 1:length(q)
         

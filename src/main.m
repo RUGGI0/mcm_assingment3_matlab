@@ -14,11 +14,11 @@ q = [pi/2, -pi/4, 0, -pi/4, 0, 0.15, pi/4]';
 
 %% Define the tool frame rigidly attached to the end-effector
 % Tool frame definition
-eRt = YPRToRot(pi/10, 0, pi/6);
+eRt = YPRToRot(pi/10, 0, pi/6);  %*% Defined inside 1st assignment
 e_r_te = [0.3; 0.1; 0];
 
 eTt = zeros(4);
-eTt(1:3, 1:3) = eRt;
+eTt(1:3, 1:3) = eRt;   %*% Common knowledge: Building homogeneous matrix
 eTt(1:3, 4) = e_r_te;
 eTt(4, 4) = 1;
 
@@ -33,7 +33,7 @@ gm.updateDirectGeometry(q);
 % Initialize the kinematic model given the goemetric model
 km = kinematicModel(gm);
 
-bTt = gm.getToolTransformWrtBase();
+bTt = gm.getToolTransformWrtBase();  %*% See function
 
 disp("eTt");
 disp(eTt);
@@ -43,7 +43,7 @@ disp(bTt);
 %% Define the goal frame and initialize cartesian control
 % Goal definition 
 bOg = [0.2;-0.8;0.3];
-bRg = YPRToRot(0,1.57,0);
+bRg = YPRToRot(0,1.57,0);  %*% Defined inside 1st assignment
 bTg = [bRg bOg;0 0 0 1]; 
 disp('bTg')
 disp(bTg)
@@ -94,19 +94,23 @@ for i = t
     %% INVERSE KINEMATICS
     k = k + 1;
 
-    km = kinematicModel(gm);
-    km.updateJacobian();
+    km = kinematicModel(gm);   %*% At each loop positions of joints change -> creating new kinematic model with updated geometric model
+    km.updateJacobian();       %*% updating jacobian with new joints position
 
-    x_dot = cc.getCartesianReference(bTg);
+    x_dot = cc.getCartesianReference(bTg);  %*% See function
 
     bJe = km.J;
 
     % -------------------- PATCHED TOOL JACOBIAN --------------------
     % End-effector pose
+
+    %*% Computing updated rigid body jacobian for joint velocities: notes 28/11 and 01/12
+
     bTe = gm.getTransformWrtBase(gm.jointNumber);
     bRe = bTe(1:3, 1:3);
     
-    e_r_tb = bRe * e_r_te;
+    e_r_tb = bRe * e_r_te;  %*% Expressing distance between ee and tool defined in ee frame, then projected onto base frame --> 
+                            %*% already seen in 2nd assignment to express a vector in another frame
 
     skew_e_r_tb = [   0        -e_r_tb(3)  e_r_tb(2);
                    e_r_tb(3)     0        -e_r_tb(1);
@@ -118,12 +122,12 @@ for i = t
     % ---------------------------------
 
     % Compute desired joint velocities 
-    q_dot = pinv(bJt) * x_dot;
+    q_dot = pinv(bJt) * x_dot;  %*% Minimum normal solution to inverse kinematic problem: notes 05/12
 
     % simulating the robot
-    q = KinematicSimulation(q,q_dot,dt,qmin,qmax);
+    q = KinematicSimulation(q,q_dot,dt,qmin,qmax);  %*% See function
 
-    gm.updateDirectGeometry(q);
+    gm.updateDirectGeometry(q);    %*% CK: update geometric representation of mechanism after movement
     
     
     pm.plotIter(gm, km, i, q_dot);
@@ -149,8 +153,10 @@ actual_t = t(1:k);
 % Tool
 figure
 hold on;
-p1 = plot(actual_t, history_x_dot_T(1:3, 1:k), '-', 'LineWidth', 2); 
-p2 = plot(actual_t, history_x_dot_T(4:6, 1:k), '-', 'LineWidth', 2);
+%p1 = plot(actual_t, history_x_dot_T(1:3, 1:k), '-', 'LineWidth', 2); 
+p1 = plot(actual_t, history_x_dot_T(1:3, 1:k)); 
+%p2 = plot(actual_t, history_x_dot_T(4:6, 1:k), '-', 'LineWidth', 2);
+p2 = plot(actual_t, history_x_dot_T(4:6, 1:k));
 title('Tool Velocities: Linear [m/s] & Angular [rad/s]');
 xlabel('Time [s]'); ylabel('Velocity');
 legend([p1; p2], {'v_x','v_y','v_z','\omega_x','\omega_y','\omega_z'}, 'Location', 'northeastoutside');
@@ -159,8 +165,10 @@ grid on;
 % End Effector
 figure
 hold on;
-p3 = plot(actual_t, history_x_dot_E(1:3, 1:k), '-', 'LineWidth', 2);
-p4 = plot(actual_t, history_x_dot_E(4:6, 1:k), '-', 'LineWidth', 2);
+%p3 = plot(actual_t, history_x_dot_E(1:3, 1:k), '-', 'LineWidth', 2);
+p3 = plot(actual_t, history_x_dot_E(1:3, 1:k));
+%p4 = plot(actual_t, history_x_dot_E(4:6, 1:k), '-', 'LineWidth', 2);
+p4 = plot(actual_t, history_x_dot_E(4:6, 1:k));
 title('End-Effector Velocities: Linear [m/s] & Angular [rad/s]');
 xlabel('Time [s]'); ylabel('Velocity');
 legend([p3; p4], {'v_x','v_y','v_z','\omega_x','\omega_y','\omega_z'}, 'Location', 'northeastoutside');

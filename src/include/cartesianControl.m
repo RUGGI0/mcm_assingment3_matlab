@@ -28,14 +28,16 @@ classdef cartesianControl < handle
 
             bTt = self.gm.getToolTransformWrtBase;
 
-            r = bTg(1:3,4) - bTt(1:3,4);
+            %*% Cartesian error: notes 12/12
+            
+            r = bTg(1:3,4) - bTt(1:3,4); %*% CK: translational error as difference between positions
 
             bRt = bTt(1:3,1:3);
             bRg = bTg(1:3,1:3);
 
-            R_err = bRg * bRt';
+            R_err = bRg * bRt';  %*% CK: rotational error as relative orientation
 
-            [h, theta] = RotToAngleAxis(R_err);
+            [h, theta] = RotToAngleAxis(R_err);  %*% Defined in 1st assignment
 
             rho = h * theta;
 
@@ -45,7 +47,7 @@ classdef cartesianControl < handle
             delta(1:3,1:3) = eye(3)*self.k_a;
             delta(4:6,4:6) = eye(3)*self.k_l;
 
-            x_dot = delta*error;
+            x_dot = delta*error;  %*% Definition given by 3rd assignmnet --> formula in es Q2.2
             
         end
     end

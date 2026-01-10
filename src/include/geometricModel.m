@@ -14,7 +14,7 @@ classdef geometricModel < handle
         jointNumber
         iTj
         q
-        eTt
+        eTt %% Design choice
     end
 
     methods
@@ -77,7 +77,7 @@ classdef geometricModel < handle
             %TO DO
             bTn = self.getTransformWrtBase(self.jointNumber);
 
-            bTt = bTn * self.eTt;
+            bTt = bTn * self.eTt; %*% CK: multiplying tranformations to obtain a new one (n=e)
         end
 
         function [bTk] = getTransformWrtBase(self,k)
