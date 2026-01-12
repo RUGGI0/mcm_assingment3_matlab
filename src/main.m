@@ -94,7 +94,7 @@ for i = t
     %% INVERSE KINEMATICS
     k = k + 1;
 
-    km = kinematicModel(gm);   %*% At each loop positions of joints change -> creating new kinematic model with updated geometric model
+    %km = kinematicModel(gm);   %*% At each loop positions of joints change -> creating new kinematic model with updated geometric model
     km.updateJacobian();       %*% updating jacobian with new joints position
 
     x_dot = cc.getCartesianReference(bTg);  %*% See function
@@ -127,7 +127,7 @@ for i = t
     % simulating the robot
     q = KinematicSimulation(q,q_dot,dt,qmin,qmax);  %*% See function
 
-    gm.updateDirectGeometry(q);    %*% CK: update geometric representation of mechanism after movement
+    km.gm.updateDirectGeometry(q);    %*% CK: update geometric representation of mechanism after movement
     
     
     pm.plotIter(gm, km, i, q_dot);

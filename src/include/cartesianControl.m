@@ -35,11 +35,19 @@ classdef cartesianControl < handle
             bRt = bTt(1:3,1:3);
             bRg = bTg(1:3,1:3);
 
-            R_err = bRg * bRt';  %*% CK: rotational error as relative orientation
+            tRg = bRt' * bRg;
 
-            [h, theta] = RotToAngleAxis(R_err);  %*% Defined in 1st assignment
+            [h, theta] = RotToAngleAxis(tRg);
 
-            rho = h * theta;
+            rho_t = h * theta;
+
+            rho = bRt * rho_t;
+
+            %R_err = bRg * bRt';  %*% CK: rotational error as relative orientation
+
+            %[h, theta] = RotToAngleAxis(R_err);  %*% Defined in 1st assignment
+
+            %rho = h * theta;
 
             error = [rho;r];
 
